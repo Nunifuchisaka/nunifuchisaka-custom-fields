@@ -1,0 +1,23 @@
+﻿{
+  "name": "nunifuchisaka-custom-fields",
+  "version": "1.2.0",
+  "private": true,
+  "description": "A lightweight custom fields plugin for WordPress.",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "watch": "webpack --mode=development --watch",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package.ps1"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^14.0.0",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "mini-css-extract-plugin": "^2.9.2",
+    "sass": "^1.89.0",
+    "sass-loader": "^16.0.5",
+    "terser-webpack-plugin": "^5.3.10",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-remove-empty-scripts": "^1.0.4"
+  }
+}

@@ -1,0 +1,10 @@
+﻿node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Release archives are generated from dist/.
+releases/*.zip
+!releases/.gitkeep
+
+# Keep dist committed because it is the WordPress-installable plugin output.
