@@ -30,6 +30,23 @@
   margin-top: 5px !important;
 }
 
+.ncf-promo {
+  margin-top: 16px;
+  border-top: 1px solid #ddd;
+  padding-top: 12px;
+  color: #50575e;
+
+  .ncf-promo__title {
+    margin: 0 0 4px;
+    font-weight: bold;
+    color: #1d2327;
+  }
+
+  .ncf-promo__text {
+    margin: 0 0 8px;
+  }
+}
+
 .ncf-input-list {
   label {
     margin-right: 15px;

@@ -1,5 +1,7 @@
 # Nunifuchisaka Custom Fields
 
+[English version](README.en.md)
+
 投稿編集画面にカスタムフィールド（メタボックス）を追加する軽量プラグイン。
 フィールド定義はプラグイン側に持たず、テーマ側からフィルターフックで登録する設計です。
 
@@ -135,6 +137,8 @@ if ( ! empty( $members ) && is_array( $members ) ) {
 | --- | --- | --- |
 | `ncf_register_fields` | filter | フィールド定義を登録する（前述） |
 | `ncf_show_output_code` | filter | `false`を返すと「まとめて出力コードを取得」欄を非表示にする。`function( $show, $post )`で呼ばれる |
+| `ncf_show_promo` | filter | `false`を返すと宣伝欄を非表示にする。`function( $show, $post )`で呼ばれる |
+| `ncf_promo_url` | filter | 宣伝欄のリンクURLを差し替える |
 | `ncf_after_save` | action | NCFの保存処理が完了した直後に発火。`function( $post_id, $saved )`。`$saved`は保存したメタキーと値の連想配列（削除されたキーは`null`）。キャッシュの破棄や外部連携などに |
 
 ```php
@@ -143,7 +147,10 @@ if ( wp_get_environment_type() === 'production' ) {
   add_filter( 'ncf_show_output_code', '__return_false' );
 }
 
-// 例2: NCFのフィールドが保存されたらキャッシュを消す
+// 例2: BOOTH宣伝欄を隠す
+// add_filter( 'ncf_show_promo', '__return_false' );
+
+// 例3: NCFのフィールドが保存されたらキャッシュを消す
 add_action( 'ncf_after_save', function( $post_id, $saved ) {
   if ( array_key_exists( 'ncf_demo_repeater', $saved ) ) {
     delete_transient( 'my_repeater_cache_' . $post_id );

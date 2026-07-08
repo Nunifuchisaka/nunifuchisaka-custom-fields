@@ -7,6 +7,7 @@
  * Tested up to: 7.0
  * Requires PHP: 7.4
  * Author: Nunifuchisaka
+ * Author URI: https://x.com/nunifuchisaka
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: nunifuchisaka-custom-fields
@@ -22,6 +23,7 @@ class Custom_Fields {
 
   private $prefix = 'ncf_';
   private $nonce  = 'ncf_nonce_action';
+  private $promo_rendered = false;
 
   public function __construct() {
     add_action( 'init', [ $this, 'load_textdomain' ] );
@@ -133,6 +135,28 @@ class Custom_Fields {
     if ( apply_filters( 'ncf_show_output_code', true, $post ) ) {
       $this->render_all_code_snippet( $fields );
     }
+
+    if ( apply_filters( 'ncf_show_promo', true, $post ) ) {
+      $this->render_promo();
+    }
+  }
+
+  /**
+   * 宣伝欄
+   */
+  private function render_promo() {
+    if ( $this->promo_rendered ) {
+      return;
+    }
+
+    $this->promo_rendered = true;
+    $promo_url = apply_filters( 'ncf_promo_url', 'https://nunifuchisaka.booth.pm/' );
+
+    echo '<div class="ncf-promo">';
+    echo '<p class="ncf-promo__title">' . esc_html__( 'ぬにふちさかのBOOTH', 'nunifuchisaka-custom-fields' ) . '</p>';
+    echo '<p class="ncf-promo__text">' . esc_html__( 'このプラグインが気に入ったら、BOOTHものぞいてもらえるとうれしいです。', 'nunifuchisaka-custom-fields' ) . '</p>';
+    echo '<a class="button button-small" href="' . esc_url( $promo_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'BOOTHを見る', 'nunifuchisaka-custom-fields' ) . '</a>';
+    echo '</div>';
   }
 
   /**
