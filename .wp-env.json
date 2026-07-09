@@ -1,0 +1,10 @@
+{
+  "plugins": [ "./dist" ],
+  "mappings": {
+    "wp-content/mu-plugins": "./.wp-env/mu-plugins"
+  },
+  "config": {
+    "WP_DEBUG": true
+  },
+  "testsEnvironment": false
+}

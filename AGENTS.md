@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository contains a lightweight WordPress plugin. Source files live in `src/`: the main PHP plugin file is `src/nunifuchisaka-custom-fields.php`, admin JavaScript is under `src/js/`, and SCSS is under `src/css/`. Build output is written to `dist/` and is kept in the repository for plugin distribution, so do not clean or delete it during routine work. Release ZIPs are generated under `releases/`. WordPress.org-facing assets, if needed, belong in `wporg-assets/`.
+This repository contains a lightweight WordPress plugin. Source files live in `src/`: the main PHP plugin file is `src/nunifuchisaka-custom-fields.php`, admin JavaScript is under `src/js/`, and SCSS is under `src/css/`. Build output is written to `dist/` and is kept in the repository for plugin distribution, so do not clean or delete it during routine work. Release ZIPs are generated under `releases/`. WordPress.org-facing assets, if needed, belong in `wporg-assets/`. `.wp-env.json` and `.wp-env/` hold a local WordPress dev/test environment (see below) and are not part of the distributed plugin.
 
 ## Build, Test, and Development Commands
 
@@ -34,6 +34,16 @@ Run `npm run build` before packaging so the release contains current assets.
 
 There is no lint command configured.
 
+Run a local WordPress instance with the plugin active (via [`@wordpress/env`](https://www.npmjs.com/package/@wordpress/env), requires Docker Desktop):
+
+```sh
+npm run env:start
+```
+
+This maps `./dist` in as the active plugin (run `npm run build` first so `dist/` is current) and loads `.wp-env/mu-plugins/ncf-demo-fields.php`, a must-use plugin that registers a sample meta box (one field of every type, including `wysiwyg` and `repeater`) via `ncf_register_fields` — since this plugin has no fields of its own, nothing renders without it. The site is at `http://localhost:8888/wp-admin` (`admin` / `password`). Stop with `npm run env:stop`, or fully remove the containers/volumes with `npm run env:destroy`.
+
+`.wp-env/mu-plugins/ncf-demo-fields.php` is dev-only scaffolding, not part of the distributed plugin (webpack's `CopyPlugin` never touches it).
+
 ## Architecture
 
 This plugin (`nunifuchisaka-custom-fields`, meta key prefix `ncf_`) adds custom-field meta boxes to the post edit screen. It holds no field definitions itself — a theme (or another plugin) registers fields via the `ncf_register_fields` filter, and this plugin handles rendering, sanitizing, and saving. Full usage/API docs (field types, hooks, repeater behavior) live in [README.md](README.md) (Japanese) / [README.en.md](README.en.md) — read those before changing field-rendering or sanitization behavior, since they document the public contract.
@@ -56,7 +66,7 @@ Follow `.editorconfig`: UTF-8, LF line endings, final newline, trimmed trailing 
 
 ## Testing Guidelines
 
-No automated test suite is currently configured. For now, verify changes by running `npm run build` and testing the plugin manually in a local WordPress install. Check the admin custom-fields UI, saved metadata behavior, and generated files under `dist/`. If adding tests later, place them in a clear `tests/` directory and document the runner command here.
+No automated test suite is currently configured. For now, verify changes by running `npm run build` and testing the plugin manually in a local WordPress install — `npm run env:start` (see above) spins one up with a demo meta box already registered. Check the admin custom-fields UI, saved metadata behavior, and generated files under `dist/`. If adding tests later, place them in a clear `tests/` directory and document the runner command here.
 
 ## Commit & Pull Request Guidelines
 
