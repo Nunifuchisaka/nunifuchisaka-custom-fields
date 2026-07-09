@@ -11,7 +11,7 @@ const DIST_DIR = path.resolve(__dirname, 'dist');
 module.exports = {
   entry: {
     'js/ncf-admin': path.resolve(SRC_DIR, 'js/ncf-admin.js'),
-    'css/ncf-admin': path.resolve(SRC_DIR, 'css/cf-admin.scss'),
+    'css/ncf-admin': path.resolve(SRC_DIR, 'css/ncf-admin.scss'),
   },
   output: {
     path: DIST_DIR,

@@ -94,6 +94,7 @@ add_filter( 'ncf_register_fields', function( $configs ) {
 | `post_type` | - | `post`型用。選択対象のpost_type（既定: `post`） |
 | `posts_per_page` | - | `post`型用。選択肢に出す最大件数（既定: 50） |
 | `sub_fields` | - | `repeater`型用。行内のフィールド定義の配列 |
+| `editor_settings` | - | `wysiwyg`型用。`wp_editor()`の設定を上書きする配列（`textarea_name`は上書き不可） |
 | `sanitize_callback` | - | 保存時のサニタイズを差し替えるコールバック。`function( $value, $field )`で呼ばれる |
 
 ## フィールド型一覧
@@ -113,6 +114,7 @@ add_filter( 'ncf_register_fields', function( $configs ) {
 | `date` | 日付ピッカー（ブラウザ標準） | `YYYY-MM-DD`形式の文字列（形式外の値は空で保存） |
 | `color` | WordPressカラーピッカー | `#rrggbb`形式の文字列 |
 | `repeater` | 行の追加・削除・ドラッグ並べ替え | 行（連想配列）の配列 |
+| `wysiwyg` | リッチエディタ（ビジュアル/テキスト切替、メディア追加可） | HTML文字列（`wp_kses_post`済み） |
 
 ## リピーター
 
@@ -132,6 +134,7 @@ add_filter( 'ncf_register_fields', function( $configs ) {
 ```
 
 ※ リピーターの入れ子（repeaterの中にrepeater）には対応していません。
+※ `sub_fields`に`wysiwyg`は使えません（指定した場合は`textarea`として扱われます）。
 
 ## テンプレートでの値の取得
 
@@ -197,4 +200,5 @@ add_action( 'ncf_after_save', function( $post_id, $saved ) {
 - 保存時はフィールド型に応じたサニタイズが自動で適用されます。独自の加工が必要な場合のみ`sanitize_callback`を指定してください。
 - `select` / `radio` / `checkbox`は`options`に定義された値のみ、`image`は実在する画像添付ファイルIDのみ、`post`は実在する対象post_typeの投稿IDのみ保存されます（定義外の値は空になります）。
 - `post`型は軽量化のため選択肢を既定50件に絞っていますが、保存済みの投稿は件数から漏れていても選択肢に含まれるため、再保存で選択が消えることはありません。件数を増やす場合は`posts_per_page`を指定します。
-- WYSIWYG（リッチエディタ）型は未対応です。長文はtextareaを使うか、本文側で管理してください。
+- `wysiwyg`型は`wp_kses_post`相当のタグのみ保存されます（`script`や`iframe`は除去されます）。埋め込みが必要な場合は`sanitize_callback`で調整してください。
+- `wysiwyg`型はフィールドごとにエディタを1つ生成するため、1画面に大量に配置すると表示が重くなります。個数は控えめにしてください。

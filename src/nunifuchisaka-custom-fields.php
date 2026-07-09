@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nunifuchisaka Custom Fields
  * Description: カスタマイズ可能な軽量カスタムフィールド管理プラグイン
- * Version: 1.2.0
+ * Version: 1.3.0-beta.1
  * Requires at least: 6.0
  * Tested up to: 7.0
  * Requires PHP: 7.4
@@ -202,7 +202,8 @@ class Custom_Fields {
           } elseif ( isset($sub['type']) && $sub['type'] === 'url' ) {
              $code .= "    // {$sub_lbl} (URL)\n";
              $code .= "    echo esc_url( \$row[{$sub_key_literal}] ?? '' );\n";
-          } elseif ( isset($sub['type']) && $sub['type'] === 'textarea' ) {
+          } elseif ( isset($sub['type']) && in_array( $sub['type'], [ 'textarea', 'wysiwyg' ], true ) ) {
+             // wysiwygはsub_fields内ではtextareaとして保存されるため出力コードも同じ扱い
              $code .= "    // {$sub_lbl} (改行保持)\n";
              $code .= "    echo nl2br( esc_html( \$row[{$sub_key_literal}] ?? '' ) );\n";
           } else {
@@ -244,6 +245,11 @@ class Custom_Fields {
         $code .= "  echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( {$var_name} ) ) );\n";
         $code .= "}\n";
 
+      } elseif ( $type === 'wysiwyg' ) {
+        // wp_editor()で保存したHTML。wpautopで段落を復元してから出力時も念のためksesする
+        $code .= "{$var_name} = get_post_meta( get_the_ID(), {$meta_key_literal}, true );\n";
+        $code .= "echo wp_kses_post( wpautop( {$var_name} ) );\n";
+
       } else {
         $code .= "{$var_name} = get_post_meta( get_the_ID(), {$meta_key_literal}, true );\n";
         if ( $type === 'textarea' ) {
@@ -281,6 +287,25 @@ class Custom_Fields {
    */
   private function field_input_id( $name ) {
     return 'ncf_field_' . preg_replace( '/[^a-zA-Z0-9_{}-]/', '_', $name );
+  }
+
+  /**
+   * wp_editor()用のid。lowercase英数字とアンダースコアのみという制約があるため
+   * field_input_id()とは別に生成する（textarea_nameでPOSTのキーはnameのまま保つ）
+   */
+  private function wysiwyg_editor_id( $name ) {
+    return 'ncf_wysiwyg_' . strtolower( preg_replace( '/[^a-zA-Z0-9_]/', '_', $name ) );
+  }
+
+  /**
+   * repeaterのsub_fieldsはPHP再描画なしでJSがテンプレート行を複製するため、
+   * wp_editor()の初期化が効かない。wysiwygが指定された場合はtextareaとして扱う
+   */
+  private function normalize_sub_field( $sub ) {
+    if ( isset( $sub['type'] ) && 'wysiwyg' === $sub['type'] ) {
+      $sub['type'] = 'textarea';
+    }
+    return $sub;
   }
 
   /**
@@ -338,6 +363,22 @@ class Custom_Fields {
 
       case 'textarea':
         echo '<textarea name="' . esc_attr( $name ) . '" id="' . $id . '" rows="4" class="large-text">' . esc_textarea( $value ) . '</textarea>';
+        break;
+
+      case 'wysiwyg':
+        $editor_id = $this->wysiwyg_editor_id( $name );
+        $settings  = array_merge(
+          [
+            'textarea_rows' => 6,
+            'media_buttons' => true,
+            'teeny'         => true,
+            'quicktags'     => true,
+          ],
+          (array) ( $field['editor_settings'] ?? [] )
+        );
+        // POST時のキーはnameのまま保つ（editor_idとは独立させる）
+        $settings['textarea_name'] = $name;
+        wp_editor( $value, $editor_id, $settings );
         break;
 
       case 'select':
@@ -419,6 +460,7 @@ class Custom_Fields {
     echo '<div class="ncf-repeater-row">';
     echo '<span class="ncf-repeater-handle dashicons dashicons-menu" title="' . esc_attr__( 'ドラッグで並べ替え', 'nunifuchisaka-custom-fields' ) . '"></span>';
     foreach ( $sub_fields as $sub ) {
+      $sub = $this->normalize_sub_field( $sub );
       $sub_key = $sub['key'];
       $input_name = $parent_key . '[' . $index . '][' . $sub_key . ']';
       $sub_val    = $row_data[ $sub_key ] ?? '';
@@ -496,6 +538,8 @@ class Custom_Fields {
         return preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ? $value : '';
       case 'textarea':
         return sanitize_textarea_field( $value );
+      case 'wysiwyg':
+        return wp_kses_post( $value );
       default:
         return sanitize_text_field( $value );
     }
@@ -548,6 +592,7 @@ class Custom_Fields {
           if ( $type === 'repeater' && is_array( $data ) ) {
             $sub_defs = [];
             foreach ( ( $field['sub_fields'] ?? [] ) as $sub ) {
+              $sub = $this->normalize_sub_field( $sub );
               $sub_defs[ $sub['key'] ] = $sub;
             }
 

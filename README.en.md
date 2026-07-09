@@ -92,6 +92,7 @@ Each item in `fields` supports the following keys.
 | `post_type` | No | Target post type for `post` fields. Default is `post` |
 | `posts_per_page` | No | Maximum choices for `post` fields. Default is 50 |
 | `sub_fields` | No | Nested field definitions for `repeater` fields |
+| `editor_settings` | No | For `wysiwyg` fields. Array that overrides `wp_editor()` settings (`textarea_name` cannot be overridden) |
 | `sanitize_callback` | No | Custom save-time sanitizer called as `function( $value, $field )` |
 
 ## Supported Field Types
@@ -111,6 +112,7 @@ Each item in `fields` supports the following keys.
 | `date` | Browser date picker | `YYYY-MM-DD` string, or empty for invalid values |
 | `color` | WordPress color picker | `#rrggbb` string |
 | `repeater` | Add, remove, and drag-sort rows | Array of associative row arrays |
+| `wysiwyg` | Rich text editor (Visual/Text tabs, media button) | HTML string (sanitized with `wp_kses_post`) |
 
 ## Repeater Fields
 
@@ -130,6 +132,7 @@ Use `sub_fields` to define a repeatable set of fields. Rows can be reordered by 
 ```
 
 Nested repeaters are not supported.
+The `wysiwyg` type cannot be used in `sub_fields`; it falls back to `textarea`.
 
 ## Reading Values in Templates
 
@@ -192,5 +195,6 @@ add_action( 'ncf_after_save', function( $post_id, $saved ) {
 - `image` saves only existing image attachment IDs.
 - `post` saves only existing posts of the configured `post_type`.
 - Saved `post` values remain selectable even when they are outside the `posts_per_page` limit.
-- WYSIWYG fields are not supported. Use `textarea` for long text or manage rich content in the main editor.
+- `wysiwyg` fields only save tags allowed by `wp_kses_post` (`script` and `iframe` are stripped). Use `sanitize_callback` if you need embeds.
+- `wysiwyg` fields each instantiate a full editor instance; keep the number of them per screen modest.
 - Source files are in `src/`, and webpack writes distributable files to `dist/`.
