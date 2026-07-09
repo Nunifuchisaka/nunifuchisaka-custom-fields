@@ -43,7 +43,7 @@ Developer-facing hooks like the `ncf_after_save` action let you hook in cache in
 
 ## Where to get it
 
-* [BOOTH](https://nunifuchisaka.booth.pm/) (product page coming soon)
+* [BOOTH](https://nunifuchisaka.booth.pm/items/8598574)
 * [GitHub Releases](https://github.com/Nunifuchisaka/nunifuchisaka-custom-fields/releases)
 
 ## Basic Usage
