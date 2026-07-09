@@ -5,6 +5,38 @@
 A lightweight WordPress plugin that adds custom fields (meta boxes) to the post editing screen.
 Field definitions are not stored in the plugin. Instead, themes register them through a filter hook.
 
+Built for theme developers. The author is a theme developer too, and made this plugin after wanting exactly this — the ability to manage field definitions in code — while building themes.
+
+## Features — what sets it apart
+
+### Field definitions live in code
+
+Unlike plugins where you configure everything by clicking through an admin screen, field definitions here are written in your theme's `functions.php` (PHP code). Nothing is stored in the database, which means:
+
+* Changes are tracked in Git
+* Settings never drift between production, staging, and local (no per-environment reconfiguration)
+* Field definitions can go through code review
+
+### Repeater fields are free
+
+Fields that let you add, remove, and drag-reorder rows (e.g. a member list or a set of related links) are often a paid-tier feature in other popular plugins. Here, repeaters are included for free.
+
+### Auto-generated template output code
+
+Open the "Get output code for all fields" panel on the edit screen, and it generates ready-to-use PHP output code (using safe patterns like `get_post_meta` and `esc_html`) for every registered field. Copy it straight into your template — no more hand-writing the same boilerplate every time.
+
+### Safer saved data
+
+Choice-based fields (`select` / `radio` / `checkbox`) only save values that match the defined options, and image/post-selector fields only save IDs of attachments or posts that actually exist. This validation runs automatically on save, so tampered or stale values never make it into the database.
+
+### Lightweight, no extra dependencies
+
+It only uses features already built into WordPress (the media uploader, color picker, jQuery UI) — no additional libraries are loaded, keeping the admin screen fast.
+
+### Extensible via hooks
+
+Developer-facing hooks like the `ncf_after_save` action let you hook in cache invalidation or external integrations after fields are saved.
+
 ## Basic Usage
 
 Return field configuration arrays from the `ncf_register_fields` filter in your theme's `functions.php`.
