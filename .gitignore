@@ -8,3 +8,6 @@ releases/*.zip
 !releases/.gitkeep
 
 # Keep dist committed because it is the WordPress-installable plugin output.
+
+# BOOTH/marketing screenshots — draft assets, not part of the plugin or its docs.
+booth-assets/
