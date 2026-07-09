@@ -1,9 +1,18 @@
-# Nunifuchisaka Custom Fields
+---
+title: Nunifuchisaka Custom Fields
+---
 
-[日本語版](README.md) | [Documentation site](https://nunifuchisaka.github.io/nunifuchisaka-custom-fields/en/)
+[日本語](../) | [GitHub repository](https://github.com/Nunifuchisaka/nunifuchisaka-custom-fields) | [Changelog](changelog)
+
+# Nunifuchisaka Custom Fields
 
 A lightweight WordPress plugin that adds custom fields (meta boxes) to the post editing screen.
 Field definitions are not stored in the plugin. Instead, themes register them through a filter hook.
+
+## Where to get it
+
+* [BOOTH](https://nunifuchisaka.booth.pm/) (product page coming soon)
+* [GitHub Releases](https://github.com/Nunifuchisaka/nunifuchisaka-custom-fields/releases)
 
 ## Basic Usage
 
@@ -155,10 +164,9 @@ add_action( 'ncf_after_save', function( $post_id, $saved ) {
 
 ## Notes
 
-- Values are automatically sanitized according to field type. Use `sanitize_callback` only when custom processing is needed.
-- `select`, `radio`, and `checkbox` save only values defined in `options`.
-- `image` saves only existing image attachment IDs.
-- `post` saves only existing posts of the configured `post_type`.
-- Saved `post` values remain selectable even when they are outside the `posts_per_page` limit.
-- WYSIWYG fields are not supported. Use `textarea` for long text or manage rich content in the main editor.
-- Source files are in `src/`, and webpack writes distributable files to `dist/`.
+* Values are automatically sanitized according to field type. Use `sanitize_callback` only when custom processing is needed.
+* `select`, `radio`, and `checkbox` save only values defined in `options`.
+* `image` saves only existing image attachment IDs.
+* `post` saves only existing posts of the configured `post_type`.
+* Saved `post` values remain selectable even when they are outside the `posts_per_page` limit.
+* WYSIWYG fields are not supported. Use `textarea` for long text or manage rich content in the main editor.

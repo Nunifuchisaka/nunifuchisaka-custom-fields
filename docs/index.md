@@ -1,13 +1,22 @@
-# Nunifuchisaka Custom Fields
+---
+title: Nunifuchisaka Custom Fields
+---
 
-[English version](README.en.md) | [ドキュメントサイト](https://nunifuchisaka.github.io/nunifuchisaka-custom-fields/)
+[English](en/) | [GitHub リポジトリ](https://github.com/Nunifuchisaka/nunifuchisaka-custom-fields) | [更新履歴](changelog)
+
+# Nunifuchisaka Custom Fields
 
 投稿編集画面にカスタムフィールド（メタボックス）を追加する軽量プラグイン。
 フィールド定義はプラグイン側に持たず、テーマ側からフィルターフックで登録する設計です。
 
+## 入手方法
+
+* [BOOTH](https://nunifuchisaka.booth.pm/) （配布ページは準備中です）
+* [GitHub Releases](https://github.com/Nunifuchisaka/nunifuchisaka-custom-fields/releases)
+
 ## 基本的な使い方
 
-テーマの`functions.php`（このスケルトンでは`src/theme/functions/`配下のパーシャル）で、`ncf_register_fields`フィルターにフィールド定義の配列を返します。
+テーマの`functions.php`で、`ncf_register_fields`フィルターにフィールド定義の配列を返します。
 
 ```php
 add_filter( 'ncf_register_fields', function( $configs ) {
@@ -160,8 +169,7 @@ add_action( 'ncf_after_save', function( $post_id, $saved ) {
 
 ## 補足
 
-- 保存時はフィールド型に応じたサニタイズが自動で適用されます。独自の加工が必要な場合のみ`sanitize_callback`を指定してください。
-- `select` / `radio` / `checkbox`は`options`に定義された値のみ、`image`は実在する画像添付ファイルIDのみ、`post`は実在する対象post_typeの投稿IDのみ保存されます（定義外の値は空になります）。
-- `post`型は軽量化のため選択肢を既定50件に絞っていますが、保存済みの投稿は件数から漏れていても選択肢に含まれるため、再保存で選択が消えることはありません。件数を増やす場合は`posts_per_page`を指定します。
-- WYSIWYG（リッチエディタ）型は未対応です。長文はtextareaを使うか、本文側で管理してください。
-- このスケルトンでは`src/plugins/nunifuchisaka-custom-fields/`がソースで、webpackビルドで`dist/plugins/nunifuchisaka-custom-fields/`に出力されたものがDocker経由でWordPressにマウントされます。有効化は管理画面の「プラグイン」から行ってください。
+* 保存時はフィールド型に応じたサニタイズが自動で適用されます。独自の加工が必要な場合のみ`sanitize_callback`を指定してください。
+* `select` / `radio` / `checkbox`は`options`に定義された値のみ、`image`は実在する画像添付ファイルIDのみ、`post`は実在する対象post_typeの投稿IDのみ保存されます（定義外の値は空になります）。
+* `post`型は軽量化のため選択肢を既定50件に絞っていますが、保存済みの投稿は件数から漏れていても選択肢に含まれるため、再保存で選択が消えることはありません。件数を増やす場合は`posts_per_page`を指定します。
+* WYSIWYG（リッチエディタ）型は未対応です。長文はtextareaを使うか、本文側で管理してください。

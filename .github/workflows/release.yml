@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Derive version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify version matches package.json and readme.txt
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          pkg_version=$(node -p "require('./package.json').version")
+          if [ "$pkg_version" != "$version" ]; then
+            echo "Tag v$version does not match package.json version $pkg_version" >&2
+            exit 1
+          fi
+          stable_tag=$(grep -m1 '^Stable tag:' readme.txt | sed 's/^Stable tag:[[:space:]]*//')
+          if [ "$stable_tag" != "$version" ]; then
+            echo "Tag v$version does not match readme.txt Stable tag $stable_tag" >&2
+            exit 1
+          fi
+
+      - name: Build zip from dist/
+        run: |
+          set -euo pipefail
+          slug="nunifuchisaka-custom-fields"
+          version="${{ steps.version.outputs.version }}"
+          work_dir="$RUNNER_TEMP/$slug"
+          mkdir -p "$work_dir"
+          cp -r dist/. "$work_dir/"
+          (cd "$RUNNER_TEMP" && zip -r "$GITHUB_WORKSPACE/$slug-$version.zip" "$slug")
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: nunifuchisaka-custom-fields-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true
